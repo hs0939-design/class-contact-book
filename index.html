@@ -21,11 +21,15 @@ let state = {
   config: {className:'我的班級'},
   entry: {homework:[], announcements:[], updatedAt:null},
   entryDates: new Set(),
+  boardSettingsOpen: false,
+  boardFont: loadBoardFont(),
 };
 
 async function init(){
   const cfg = await fetchJson('./data/config.json');
   if(cfg) state.config = cfg;
+  applyTheme(state.config.colors);
+  saveBoardFont(state.boardFont);
   const manifest = await fetchJson('./data/manifest.json');
   if(Array.isArray(manifest)) state.entryDates = new Set(manifest);
   await loadEntryForCurrentDate();
@@ -62,7 +66,14 @@ function enterBoard(){
 }
 function exitBoard(){
   state.mode = 'view';
+  state.boardSettingsOpen = false;
   document.body.classList.remove('board-mode');
+  render();
+}
+function toggleBoardSettings(){ state.boardSettingsOpen = !state.boardSettingsOpen; render(); }
+function setBoardFont(which, value){
+  state.boardFont[which] = Number(value);
+  saveBoardFont(state.boardFont);
   render();
 }
 document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && state.mode==='board') exitBoard(); });
@@ -108,7 +119,7 @@ function renderSideInfo(){
     <h3>本月紀錄</h3>
     <div class="cal-grid">${renderCalendarGrid(state.calMonth, state.currentDate, state.entryDates, 'goToDateStr')}</div>
     <button class="jump-today" onclick="goToDateStr('${dateKey(new Date())}')">回到今天</button>
-    <div class="side-info">日曆上有綠點的日子，表示當天老師已經更新聯絡簿內容。</div>
+    <div class="side-info">日曆上有小圓點的日子，表示當天老師已經更新聯絡簿內容。</div>
   `;
 }
 function renderCalendarPanel(){
@@ -127,13 +138,10 @@ function renderCalendarPanel(){
 function renderHomeworkView(){
   const list = state.entry.homework || [];
   if(list.length===0) return `<div class="empty-hint">今天還沒有交代功課喔</div>`;
-  return list.map(h=>{
-    const label = h.subject==='其他' && h.customLabel ? h.customLabel : h.subject;
-    return `<div class="row">
-      <div class="stamp" style="color:${subjectColor(h.subject)}">${escapeHtml(label)}</div>
+  return list.map((h,i)=>`<div class="row">
+      <div class="stamp">${i+1}</div>
       <div class="content-text">${escapeHtml(h.text)}</div>
-    </div>`;
-  }).join('');
+    </div>`).join('');
 }
 function renderAnnouncementView(){
   const list = state.entry.announcements || [];
@@ -149,21 +157,20 @@ function renderBoard(){
   return `
     <div class="board-wrap">
       <button class="exit-board" onclick="exitBoard()">✕ 離開投影模式</button>
+      <button class="board-settings-btn" onclick="toggleBoardSettings()">🔠 字體設定</button>
+      ${state.boardSettingsOpen ? renderBoardSettingsPanel() : ''}
       <div class="board-head">
-        <div class="b-class">${escapeHtml(state.config.className)}</div>
         <div class="b-date">${fmtDateLabel(state.currentDate)}</div>
+        <div class="b-class">${escapeHtml(state.config.className)}</div>
       </div>
       <div class="board-body">
         <div class="board-sec">
           <h2>今日交代功課</h2>
           ${hw.length===0 ? `<div class="board-empty">今天還沒有交代功課</div>` :
-            hw.map(h=>{
-              const label = h.subject==='其他' && h.customLabel ? h.customLabel : h.subject;
-              return `<div class="board-row">
-                <div class="board-stamp" style="color:${subjectColor(h.subject)}">${escapeHtml(label)}</div>
+            hw.map((h,i)=>`<div class="board-row">
+                <div class="board-stamp">${i+1}</div>
                 <div class="board-text">${escapeHtml(h.text)}</div>
-              </div>`;
-            }).join('')}
+              </div>`).join('')}
         </div>
         <div class="board-sec">
           <h2>公告聯絡事項</h2>
@@ -177,12 +184,23 @@ function renderBoard(){
   `;
 }
 
+function renderBoardSettingsPanel(){
+  return `<div class="board-settings-panel">
+    <label>內容字級：${state.boardFont.text}px</label>
+    <input type="range" min="18" max="48" value="${state.boardFont.text}" oninput="setBoardFont('text', this.value)">
+    <label>日期字級：${state.boardFont.date}px</label>
+    <input type="range" min="18" max="40" value="${state.boardFont.date}" oninput="setBoardFont('date', this.value)">
+  </div>`;
+}
+
 window.shiftDay = shiftDay;
 window.goToDateStr = goToDateStr;
 window.toggleCal = toggleCal;
 window.calShift = calShift;
 window.enterBoard = enterBoard;
 window.exitBoard = exitBoard;
+window.toggleBoardSettings = toggleBoardSettings;
+window.setBoardFont = setBoardFont;
 
 init();
 </script>

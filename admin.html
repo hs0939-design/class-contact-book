@@ -105,6 +105,7 @@ async function loadAllFromRepo(){
   try{
     const cfg = await ghGet('data/config.json');
     if(cfg) state.config = cfg.json;
+    applyTheme(state.config.colors);
     const manifest = await ghGet('data/manifest.json');
     state.entryDates = new Set(manifest ? manifest.json : []);
     await loadEntryForCurrentDate();
@@ -144,7 +145,7 @@ function calShift(delta){
 }
 
 /* ---------- draft editing ---------- */
-function addHomework(){ state.draft.homework.push({id:uid(), subject:'國語', customLabel:'', text:''}); render(); }
+function addHomework(){ state.draft.homework.push({id:uid(), text:''}); render(); }
 function removeHomework(id){ state.draft.homework = state.draft.homework.filter(h=>h.id!==id); render(); }
 function updateHomework(id, field, value){ const h = state.draft.homework.find(h=>h.id===id); if(h) h[field]=value; }
 function addAnnouncement(){ state.draft.announcements.push({id:uid(), text:'', link:''}); render(); }
@@ -170,14 +171,39 @@ async function doSave(){
   state.saving = false; render();
 }
 
-async function saveClassName(){
-  const input = document.getElementById('classname-input');
-  const name = input.value.trim();
+/* ---------- settings (class name + colors) ---------- */
+function previewColors(){
+  applyTheme({
+    paper: document.getElementById('color-paper').value,
+    ink: document.getElementById('color-ink').value,
+    navy: document.getElementById('color-navy').value,
+    gold: document.getElementById('color-gold').value,
+  });
+}
+function randomizeColors(){
+  const t = randomTheme();
+  document.getElementById('color-paper').value = t.paper;
+  document.getElementById('color-ink').value = t.ink;
+  document.getElementById('color-navy').value = t.navy;
+  document.getElementById('color-gold').value = t.gold;
+  applyTheme(t);
+}
+async function saveSettings(){
+  const nameInput = document.getElementById('classname-input');
+  const name = nameInput.value.trim();
   if(!name) return;
+  const colors = {
+    paper: document.getElementById('color-paper').value,
+    ink: document.getElementById('color-ink').value,
+    navy: document.getElementById('color-navy').value,
+    gold: document.getElementById('color-gold').value,
+  };
   try{
     state.config.className = name;
-    await ghPut('data/config.json', state.config, '更新班級名稱');
-    showToast('班級名稱已更新');
+    state.config.colors = colors;
+    await ghPut('data/config.json', state.config, '更新設定');
+    applyTheme(colors);
+    showToast('設定已更新');
     state.modal = null;
     render();
   }catch(e){ showToast(e.message); }
@@ -197,8 +223,16 @@ function submitAuth(){
   loadAllFromRepo().then(render);
 }
 
-function openSettings(){ state.modal='settings'; render(); }
-function closeModal(){ state.modal=null; render(); }
+function openSettings(){
+  if(!state.config.colors) state.config.colors = Object.assign({}, DEFAULT_COLORS);
+  state.modal='settings';
+  render();
+}
+function closeModal(){
+  state.modal=null;
+  applyTheme(state.config.colors);
+  render();
+}
 
 /* ---------- render ---------- */
 function render(){
@@ -263,12 +297,9 @@ function renderCalendarPanel(){
 
 function renderHomeworkEdit(){
   if(!state.draft) return '';
-  const rows = state.draft.homework.map(h=>`
+  const rows = state.draft.homework.map((h,i)=>`
     <div class="edit-row">
-      <select class="subj-select" onchange="updateHomework('${h.id}','subject',this.value); render();">
-        ${SUBJECTS.map(s=>`<option value="${s.key}" ${h.subject===s.key?'selected':''}>${s.key}</option>`).join('')}
-      </select>
-      ${h.subject==='其他' ? `<input type="text" class="custom-subj" placeholder="自訂名稱" value="${escapeAttr(h.customLabel||'')}" oninput="updateHomework('${h.id}','customLabel',this.value)">` : ''}
+      <div class="stamp">${i+1}</div>
       <textarea placeholder="功課內容…" oninput="updateHomework('${h.id}','text',this.value)">${escapeHtml(h.text)}</textarea>
       <button class="del" onclick="removeHomework('${h.id}')">✕</button>
     </div>
@@ -309,15 +340,24 @@ function renderAuthModal(){
   `;
 }
 function renderSettingsModal(){
+  const c = Object.assign({}, DEFAULT_COLORS, state.config.colors||{});
   return `
     <div class="modal-backdrop">
       <div class="modal">
         <h3>設定</h3>
         <label>班級名稱</label>
         <input type="text" id="classname-input" value="${escapeAttr(state.config.className)}">
+
+        <label style="margin-top:18px;">整體配色</label>
+        <div class="color-row"><span>背景色</span><input type="color" id="color-paper" value="${c.paper}" oninput="previewColors()"></div>
+        <div class="color-row"><span>文字色</span><input type="color" id="color-ink" value="${c.ink}" oninput="previewColors()"></div>
+        <div class="color-row"><span>主色（頁首／按鈕）</span><input type="color" id="color-navy" value="${c.navy}" oninput="previewColors()"></div>
+        <div class="color-row"><span>強調色（編號／裝飾）</span><input type="color" id="color-gold" value="${c.gold}" oninput="previewColors()"></div>
+        <button type="button" class="random-btn" onclick="randomizeColors()">🎲 隨機配色</button>
+
         <div class="modal-actions">
           <button class="btn-cancel" onclick="closeModal()">取消</button>
-          <button class="btn-ok" onclick="saveClassName()">儲存班級名稱</button>
+          <button class="btn-ok" onclick="saveSettings()">儲存設定</button>
         </div>
         <div class="hint">
           目前連結的 Repo：${escapeHtml(state.auth.owner)}/${escapeHtml(state.auth.repo)}（分支：${escapeHtml(state.auth.branch)}）
@@ -344,7 +384,9 @@ window.doSave = doSave;
 window.submitAuth = submitAuth;
 window.openSettings = openSettings;
 window.closeModal = closeModal;
-window.saveClassName = saveClassName;
+window.saveSettings = saveSettings;
+window.previewColors = previewColors;
+window.randomizeColors = randomizeColors;
 window.clearAuth = clearAuth;
 
 init();
