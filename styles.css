@@ -159,7 +159,7 @@ body.board-mode{background:var(--board-bg);}
 .board-sec h2{font-family:'Noto Serif TC',serif;font-size:20px;margin:0 0 14px;color:#D9E8DC;letter-spacing:1px;}
 .board-row{display:flex;align-items:center;gap:20px;padding:12px 0;border-bottom:1px dashed rgba(245,243,236,0.18);}
 .board-stamp{font-family:'Noto Serif TC',serif;font-weight:700;font-size:20px;border:2px solid currentColor;border-radius:10px;padding:6px 16px;flex-shrink:0;min-width:52px;text-align:center;color:var(--gold);}
-.board-text{font-size:var(--board-text-size);line-height:1.6;padding-top:4px;}
+.board-text{font-size:var(--board-text-size);line-height:1.2;}
 .board-text a{color:#F5E7B8;text-decoration:underline;}
 .board-empty{color:rgba(245,243,236,0.5);font-size:18px;padding:10px 0;}
 .exit-board{position:fixed;top:16px;right:16px;background:rgba(245,243,236,0.12);color:var(--chalk);border:1px solid rgba(245,243,236,0.35);padding:8px 16px;border-radius:8px;font-size:13px;z-index:50;}
