@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>電子聯絡簿</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app"><div class="loading">載入中…</div></div>
+
+<script src="common.js"></script>
+<script>
+let state = {
+  mode: 'view',            // view | board
+  currentDate: new Date(),
+  calOpen: false,
+  calMonth: new Date(),
+  config: {className:'我的班級'},
+  entry: {homework:[], announcements:[], updatedAt:null},
+  entryDates: new Set(),
+};
+
+async function init(){
+  const cfg = await fetchJson('./data/config.json');
+  if(cfg) state.config = cfg;
+  const manifest = await fetchJson('./data/manifest.json');
+  if(Array.isArray(manifest)) state.entryDates = new Set(manifest);
+  await loadEntryForCurrentDate();
+  render();
+}
+
+async function loadEntryForCurrentDate(){
+  const key = dateKey(state.currentDate);
+  const data = await fetchJson('./data/entries/' + key + '.json');
+  state.entry = data || {homework:[], announcements:[], updatedAt:null};
+}
+
+async function goToDateStr(key){
+  state.currentDate = keyToDate(key);
+  state.calMonth = new Date(state.currentDate.getFullYear(), state.currentDate.getMonth(), 1);
+  state.calOpen = false;
+  await loadEntryForCurrentDate();
+  render();
+}
+async function shiftDay(delta){
+  const d = new Date(state.currentDate);
+  d.setDate(d.getDate()+delta);
+  await goToDateStr(dateKey(d));
+}
+function toggleCal(){ state.calOpen = !state.calOpen; render(); }
+function calShift(delta){
+  state.calMonth = new Date(state.calMonth.getFullYear(), state.calMonth.getMonth()+delta, 1);
+  render();
+}
+function enterBoard(){
+  state.mode = 'board';
+  document.body.classList.add('board-mode');
+  render();
+}
+function exitBoard(){
+  state.mode = 'view';
+  document.body.classList.remove('board-mode');
+  render();
+}
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && state.mode==='board') exitBoard(); });
+
+function render(){
+  const app = document.getElementById('app');
+  if(state.mode==='board'){ app.innerHTML = renderBoard(); return; }
+
+  app.innerHTML = `
+    <div class="topbar">
+      <div class="brand"><span class="name serif">📖 ${escapeHtml(state.config.className)}．電子聯絡簿</span></div>
+      <div class="datebar">
+        <button class="navbtn" onclick="shiftDay(-1)">‹</button>
+        <div class="today-label serif">${fmtDateLabel(state.currentDate)}</div>
+        <button class="navbtn" onclick="shiftDay(1)">›</button>
+        <button class="cal-toggle" onclick="toggleCal()">📅 選擇日期</button>
+      </div>
+      <div class="modebar">
+        <button class="modebtn" onclick="enterBoard()">黑板投影模式</button>
+      </div>
+    </div>
+    <div class="layout">
+      <div class="side"><div class="card">${state.calOpen ? renderCalendarPanel() : renderSideInfo()}</div></div>
+      <div class="main">
+        <div class="card section">
+          <div class="card-head">
+            <h2>今日交代功課</h2>
+            <span class="meta-line">${state.entry.updatedAt ? '最後更新：'+fmtUpdated(state.entry.updatedAt) : '尚未有紀錄'}</span>
+          </div>
+          <div class="card-body">${renderHomeworkView()}</div>
+        </div>
+        <div class="card section">
+          <div class="card-head"><h2>公告聯絡事項</h2></div>
+          <div class="card-body">${renderAnnouncementView()}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderSideInfo(){
+  return `
+    <h3>本月紀錄</h3>
+    <div class="cal-grid">${renderCalendarGrid(state.calMonth, state.currentDate, state.entryDates, 'goToDateStr')}</div>
+    <button class="jump-today" onclick="goToDateStr('${dateKey(new Date())}')">回到今天</button>
+    <div class="side-info">日曆上有綠點的日子，表示當天老師已經更新聯絡簿內容。</div>
+  `;
+}
+function renderCalendarPanel(){
+  const y = state.calMonth.getFullYear(), m = state.calMonth.getMonth();
+  return `
+    <div class="cal-nav">
+      <button onclick="calShift(-1)">‹ 上月</button>
+      <span class="ym serif">${y} 年 ${m+1} 月</span>
+      <button onclick="calShift(1)">下月 ›</button>
+    </div>
+    <div class="cal-grid">${renderCalendarGrid(state.calMonth, state.currentDate, state.entryDates, 'goToDateStr')}</div>
+    <button class="jump-today" onclick="toggleCal()">關閉日曆</button>
+  `;
+}
+
+function renderHomeworkView(){
+  const list = state.entry.homework || [];
+  if(list.length===0) return `<div class="empty-hint">今天還沒有交代功課喔</div>`;
+  return list.map(h=>{
+    const label = h.subject==='其他' && h.customLabel ? h.customLabel : h.subject;
+    return `<div class="row">
+      <div class="stamp" style="color:${subjectColor(h.subject)}">${escapeHtml(label)}</div>
+      <div class="content-text">${escapeHtml(h.text)}</div>
+    </div>`;
+  }).join('');
+}
+function renderAnnouncementView(){
+  const list = state.entry.announcements || [];
+  if(list.length===0) return `<div class="empty-hint">今天沒有其他公告</div>`;
+  return list.map(a=>`<div class="row">
+    <div class="content-text">${escapeHtml(a.text)}${a.link ? `<a class="link-chip" href="${escapeAttr(a.link)}" target="_blank" rel="noopener">🔗 相關連結</a>` : ''}</div>
+  </div>`).join('');
+}
+
+function renderBoard(){
+  const hw = state.entry.homework || [];
+  const ann = state.entry.announcements || [];
+  return `
+    <div class="board-wrap">
+      <button class="exit-board" onclick="exitBoard()">✕ 離開投影模式</button>
+      <div class="board-head">
+        <div class="b-class">${escapeHtml(state.config.className)}</div>
+        <div class="b-date">${fmtDateLabel(state.currentDate)}</div>
+      </div>
+      <div class="board-body">
+        <div class="board-sec">
+          <h2>今日交代功課</h2>
+          ${hw.length===0 ? `<div class="board-empty">今天還沒有交代功課</div>` :
+            hw.map(h=>{
+              const label = h.subject==='其他' && h.customLabel ? h.customLabel : h.subject;
+              return `<div class="board-row">
+                <div class="board-stamp" style="color:${subjectColor(h.subject)}">${escapeHtml(label)}</div>
+                <div class="board-text">${escapeHtml(h.text)}</div>
+              </div>`;
+            }).join('')}
+        </div>
+        <div class="board-sec">
+          <h2>公告聯絡事項</h2>
+          ${ann.length===0 ? `<div class="board-empty">今天沒有其他公告</div>` :
+            ann.map(a=>`<div class="board-row">
+              <div class="board-text">${escapeHtml(a.text)}${a.link?` <a href="${escapeAttr(a.link)}" target="_blank" rel="noopener">🔗 連結</a>`:''}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+window.shiftDay = shiftDay;
+window.goToDateStr = goToDateStr;
+window.toggleCal = toggleCal;
+window.calShift = calShift;
+window.enterBoard = enterBoard;
+window.exitBoard = exitBoard;
+
+init();
+</script>
+</body>
+</html>

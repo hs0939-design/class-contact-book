@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>教師後台．電子聯絡簿</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="admin-banner">🔒 這是老師專用後台，請勿把此頁面的連結分享給家長或學生</div>
+<div id="app"><div class="loading">載入中…</div></div>
+
+<script src="common.js"></script>
+<script>
+const LS_KEY = 'contactbook_admin_auth';
+
+let state = {
+  auth: null,              // {owner, repo, branch, token}
+  currentDate: new Date(),
+  calOpen: false,
+  calMonth: new Date(),
+  config: {className:'我的班級'},
+  entry: {homework:[], announcements:[], updatedAt:null},
+  entryDates: new Set(),
+  draft: null,
+  saving: false,
+  modal: null,             // 'auth' | 'settings' | null
+};
+
+function loadAuth(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){ return null; }
+}
+function saveAuth(a){ localStorage.setItem(LS_KEY, JSON.stringify(a)); }
+function clearAuth(){ localStorage.removeItem(LS_KEY); state.auth = null; render(); }
+
+/* ---------- GitHub API ---------- */
+function apiBase(){ return `https://api.github.com/repos/${state.auth.owner}/${state.auth.repo}/contents/`; }
+
+async function ghGet(path){
+  const res = await fetch(apiBase()+path+`?ref=${state.auth.branch}`, {
+    headers: {
+      'Authorization': 'Bearer '+state.auth.token,
+      'Accept': 'application/vnd.github+json'
+    }
+  });
+  if(res.status===404) return null;
+  if(!res.ok) throw new Error('GitHub API 錯誤 ('+res.status+')');
+  const data = await res.json();
+  const content = decodeURIComponent(escape(atob(data.content.replace(/\n/g,''))));
+  return { sha: data.sha, json: JSON.parse(content) };
+}
+
+async function ghPut(path, obj, message){
+  let sha = undefined;
+  try{
+    const existing = await ghGet(path);
+    if(existing) sha = existing.sha;
+  }catch(e){ /* treat as new file */ }
+  const body = {
+    message: message,
+    content: btoa(unescape(encodeURIComponent(JSON.stringify(obj, null, 2)))),
+    branch: state.auth.branch,
+  };
+  if(sha) body.sha = sha;
+  const res = await fetch(apiBase()+path, {
+    method:'PUT',
+    headers:{
+      'Authorization':'Bearer '+state.auth.token,
+      'Accept':'application/vnd.github+json',
+      'Content-Type':'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  if(!res.ok){
+    const t = await res.text();
+    throw new Error('儲存失敗 ('+res.status+')：'+t.slice(0,200));
+  }
+  return await res.json();
+}
+
+/* ---------- toast ---------- */
+function showToast(msg){
+  let t = document.getElementById('toast');
+  if(!t){ t = document.createElement('div'); t.id='toast'; t.className='toast'; document.body.appendChild(t); }
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(()=>t.classList.remove('show'), 2600);
+}
+
+/* ---------- init ---------- */
+async function init(){
+  state.auth = loadAuth();
+  if(!state.auth){ state.modal='auth'; render(); return; }
+  await loadAllFromRepo();
+  render();
+}
+
+async function loadAllFromRepo(){
+  try{
+    const cfg = await ghGet('data/config.json');
+    if(cfg) state.config = cfg.json;
+    const manifest = await ghGet('data/manifest.json');
+    state.entryDates = new Set(manifest ? manifest.json : []);
+    await loadEntryForCurrentDate();
+  }catch(e){
+    showToast('讀取失敗：'+e.message);
+  }
+}
+async function loadEntryForCurrentDate(){
+  const key = dateKey(state.currentDate);
+  try{
+    const data = await ghGet('data/entries/'+key+'.json');
+    state.entry = data ? data.json : {homework:[], announcements:[], updatedAt:null};
+  }catch(e){
+    state.entry = {homework:[], announcements:[], updatedAt:null};
+    showToast('讀取今日資料失敗：'+e.message);
+  }
+  state.draft = JSON.parse(JSON.stringify(state.entry));
+}
+
+async function goToDateStr(key){
+  state.currentDate = keyToDate(key);
+  state.calMonth = new Date(state.currentDate.getFullYear(), state.currentDate.getMonth(), 1);
+  state.calOpen = false;
+  render();
+  await loadEntryForCurrentDate();
+  render();
+}
+async function shiftDay(delta){
+  const d = new Date(state.currentDate);
+  d.setDate(d.getDate()+delta);
+  await goToDateStr(dateKey(d));
+}
+function toggleCal(){ state.calOpen = !state.calOpen; render(); }
+function calShift(delta){
+  state.calMonth = new Date(state.calMonth.getFullYear(), state.calMonth.getMonth()+delta, 1);
+  render();
+}
+
+/* ---------- draft editing ---------- */
+function addHomework(){ state.draft.homework.push({id:uid(), subject:'國語', customLabel:'', text:''}); render(); }
+function removeHomework(id){ state.draft.homework = state.draft.homework.filter(h=>h.id!==id); render(); }
+function updateHomework(id, field, value){ const h = state.draft.homework.find(h=>h.id===id); if(h) h[field]=value; }
+function addAnnouncement(){ state.draft.announcements.push({id:uid(), text:'', link:''}); render(); }
+function removeAnnouncement(id){ state.draft.announcements = state.draft.announcements.filter(a=>a.id!==id); render(); }
+function updateAnnouncement(id, field, value){ const a = state.draft.announcements.find(a=>a.id===id); if(a) a[field]=value; }
+
+async function doSave(){
+  state.saving = true; render();
+  try{
+    const key = dateKey(state.currentDate);
+    const toSave = JSON.parse(JSON.stringify(state.draft));
+    toSave.updatedAt = new Date().toISOString();
+    await ghPut('data/entries/'+key+'.json', toSave, '更新聯絡簿 '+key);
+    if(!state.entryDates.has(key)){
+      state.entryDates.add(key);
+      await ghPut('data/manifest.json', Array.from(state.entryDates).sort(), '更新紀錄清單');
+    }
+    state.entry = toSave;
+    showToast('已發布，約 1 分鐘後家長端會看到更新');
+  }catch(e){
+    showToast(e.message);
+  }
+  state.saving = false; render();
+}
+
+async function saveClassName(){
+  const input = document.getElementById('classname-input');
+  const name = input.value.trim();
+  if(!name) return;
+  try{
+    state.config.className = name;
+    await ghPut('data/config.json', state.config, '更新班級名稱');
+    showToast('班級名稱已更新');
+    state.modal = null;
+    render();
+  }catch(e){ showToast(e.message); }
+}
+
+/* ---------- auth modal ---------- */
+function submitAuth(){
+  const owner = document.getElementById('auth-owner').value.trim();
+  const repo = document.getElementById('auth-repo').value.trim();
+  const branch = document.getElementById('auth-branch').value.trim() || 'main';
+  const token = document.getElementById('auth-token').value.trim();
+  if(!owner || !repo || !token){ showToast('請完整填寫 GitHub 帳號、Repo 名稱與 Token'); return; }
+  state.auth = {owner, repo, branch, token};
+  saveAuth(state.auth);
+  state.modal = null;
+  render();
+  loadAllFromRepo().then(render);
+}
+
+function openSettings(){ state.modal='settings'; render(); }
+function closeModal(){ state.modal=null; render(); }
+
+/* ---------- render ---------- */
+function render(){
+  const app = document.getElementById('app');
+  if(state.modal==='auth'){ app.innerHTML = renderAuthModal(); return; }
+
+  app.innerHTML = `
+    <div class="topbar">
+      <div class="brand"><span class="name serif">✏️ ${escapeHtml(state.config.className)}．教師後台</span></div>
+      <div class="datebar">
+        <button class="navbtn" onclick="shiftDay(-1)">‹</button>
+        <div class="today-label serif">${fmtDateLabel(state.currentDate)}</div>
+        <button class="navbtn" onclick="shiftDay(1)">›</button>
+        <button class="cal-toggle" onclick="toggleCal()">📅 選擇日期</button>
+      </div>
+      <div class="modebar">
+        <button class="modebtn" onclick="openSettings()">設定</button>
+      </div>
+    </div>
+    <div class="layout">
+      <div class="side"><div class="card">${state.calOpen ? renderCalendarPanel() : renderSideInfo()}</div></div>
+      <div class="main">
+        <div class="toolbar">
+          <button class="save-btn" ${state.saving?'disabled':''} onclick="doSave()">${state.saving?'發布中…':'💾 發布今日聯絡簿'}</button>
+        </div>
+        <div class="card section">
+          <div class="card-head">
+            <h2>今日交代功課</h2>
+            <span class="meta-line">${state.entry.updatedAt ? '最後發布：'+fmtUpdated(state.entry.updatedAt) : '尚未發布'}</span>
+          </div>
+          <div class="card-body">${renderHomeworkEdit()}</div>
+        </div>
+        <div class="card section">
+          <div class="card-head"><h2>公告聯絡事項</h2></div>
+          <div class="card-body">${renderAnnouncementEdit()}</div>
+        </div>
+      </div>
+    </div>
+    ${state.modal==='settings' ? renderSettingsModal() : ''}
+  `;
+}
+
+function renderSideInfo(){
+  return `
+    <h3>本月紀錄</h3>
+    <div class="cal-grid">${renderCalendarGrid(state.calMonth, state.currentDate, state.entryDates, 'goToDateStr')}</div>
+    <button class="jump-today" onclick="goToDateStr('${dateKey(new Date())}')">回到今天</button>
+  `;
+}
+function renderCalendarPanel(){
+  const y = state.calMonth.getFullYear(), m = state.calMonth.getMonth();
+  return `
+    <div class="cal-nav">
+      <button onclick="calShift(-1)">‹ 上月</button>
+      <span class="ym serif">${y} 年 ${m+1} 月</span>
+      <button onclick="calShift(1)">下月 ›</button>
+    </div>
+    <div class="cal-grid">${renderCalendarGrid(state.calMonth, state.currentDate, state.entryDates, 'goToDateStr')}</div>
+    <button class="jump-today" onclick="toggleCal()">關閉日曆</button>
+  `;
+}
+
+function renderHomeworkEdit(){
+  if(!state.draft) return '';
+  const rows = state.draft.homework.map(h=>`
+    <div class="edit-row">
+      <select class="subj-select" onchange="updateHomework('${h.id}','subject',this.value); render();">
+        ${SUBJECTS.map(s=>`<option value="${s.key}" ${h.subject===s.key?'selected':''}>${s.key}</option>`).join('')}
+      </select>
+      ${h.subject==='其他' ? `<input type="text" class="custom-subj" placeholder="自訂名稱" value="${escapeAttr(h.customLabel||'')}" oninput="updateHomework('${h.id}','customLabel',this.value)">` : ''}
+      <textarea placeholder="功課內容…" oninput="updateHomework('${h.id}','text',this.value)">${escapeHtml(h.text)}</textarea>
+      <button class="del" onclick="removeHomework('${h.id}')">✕</button>
+    </div>
+  `).join('');
+  return rows + `<button class="addbtn" onclick="addHomework()">＋ 新增一項功課</button>`;
+}
+function renderAnnouncementEdit(){
+  if(!state.draft) return '';
+  const rows = state.draft.announcements.map(a=>`
+    <div class="edit-row">
+      <textarea class="ann-text" placeholder="公告內容…" oninput="updateAnnouncement('${a.id}','text',this.value)">${escapeHtml(a.text)}</textarea>
+      <input type="url" class="ann-link" placeholder="連結網址（選填）" value="${escapeAttr(a.link||'')}" oninput="updateAnnouncement('${a.id}','link',this.value)">
+      <button class="del" onclick="removeAnnouncement('${a.id}')">✕</button>
+    </div>
+  `).join('');
+  return rows + `<button class="addbtn" onclick="addAnnouncement()">＋ 新增一則公告</button>`;
+}
+
+function renderAuthModal(){
+  return `
+    <div class="modal-backdrop">
+      <div class="modal">
+        <h3>連結妳的 GitHub 倉庫</h3>
+        <label>GitHub 帳號名稱（owner）</label>
+        <input type="text" id="auth-owner" placeholder="例如：huang-teacher">
+        <label>Repository 名稱</label>
+        <input type="text" id="auth-repo" placeholder="例如：class-contact-book">
+        <label>分支（沒特別設定就留 main）</label>
+        <input type="text" id="auth-branch" value="main">
+        <label>Personal Access Token</label>
+        <input type="password" id="auth-token" placeholder="貼上妳產生的 Token">
+        <div class="modal-actions">
+          <button class="btn-ok" onclick="submitAuth()">連結並開始使用</button>
+        </div>
+        <div class="hint">Token 只會存在「這台裝置、這個瀏覽器」裡，不會傳給任何人。在別的裝置（例如平板）第一次使用時，需要再貼一次。</div>
+      </div>
+    </div>
+  `;
+}
+function renderSettingsModal(){
+  return `
+    <div class="modal-backdrop">
+      <div class="modal">
+        <h3>設定</h3>
+        <label>班級名稱</label>
+        <input type="text" id="classname-input" value="${escapeAttr(state.config.className)}">
+        <div class="modal-actions">
+          <button class="btn-cancel" onclick="closeModal()">取消</button>
+          <button class="btn-ok" onclick="saveClassName()">儲存班級名稱</button>
+        </div>
+        <div class="hint">
+          目前連結的 Repo：${escapeHtml(state.auth.owner)}/${escapeHtml(state.auth.repo)}（分支：${escapeHtml(state.auth.branch)}）
+        </div>
+        <div class="modal-actions" style="margin-top:6px;">
+          <button class="lock-btn" onclick="clearAuth()">清除本機登入資訊</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+window.shiftDay = shiftDay;
+window.goToDateStr = goToDateStr;
+window.toggleCal = toggleCal;
+window.calShift = calShift;
+window.addHomework = addHomework;
+window.removeHomework = removeHomework;
+window.updateHomework = updateHomework;
+window.addAnnouncement = addAnnouncement;
+window.removeAnnouncement = removeAnnouncement;
+window.updateAnnouncement = updateAnnouncement;
+window.doSave = doSave;
+window.submitAuth = submitAuth;
+window.openSettings = openSettings;
+window.closeModal = closeModal;
+window.saveClassName = saveClassName;
+window.clearAuth = clearAuth;
+
+init();
+</script>
+</body>
+</html>
