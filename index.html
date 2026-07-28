@@ -6,12 +6,12 @@
 <title>電子聯絡簿</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=3">
+<link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
 <div id="app"><div class="loading">載入中…</div></div>
 
-<script src="common.js?v=2"></script>
+<script src="common.js?v=3"></script>
 <script>
 let state = {
   mode: 'view',            // view | board
@@ -73,6 +73,11 @@ function exitBoard(){
 function toggleBoardSettings(){ state.boardSettingsOpen = !state.boardSettingsOpen; render(); }
 function setBoardFont(which, value){
   state.boardFont[which] = Number(value);
+  saveBoardFont(state.boardFont);
+  render();
+}
+function toggleHideEmptyAnn(checked){
+  state.boardFont.hideEmptyAnn = checked;
   saveBoardFont(state.boardFont);
   render();
 }
@@ -154,6 +159,7 @@ function renderAnnouncementView(){
 function renderBoard(){
   const hw = state.entry.homework || [];
   const ann = state.entry.announcements || [];
+  const hideAnn = ann.length===0 && state.boardFont.hideEmptyAnn;
   return `
     <div class="board-wrap">
       <button class="exit-board" onclick="exitBoard()">✕ 離開投影模式</button>
@@ -172,13 +178,14 @@ function renderBoard(){
                 <div class="board-text">${escapeHtml(h.text)}</div>
               </div>`).join('')}
         </div>
+        ${hideAnn ? '' : `
         <div class="board-sec">
           <h2>公告聯絡事項</h2>
           ${ann.length===0 ? `<div class="board-empty">今天沒有其他公告</div>` :
             ann.map(a=>`<div class="board-row">
               <div class="board-text">${escapeHtml(a.text)}${a.link?` <a href="${escapeAttr(a.link)}" target="_blank" rel="noopener">🔗 連結</a>`:''}</div>
             </div>`).join('')}
-        </div>
+        </div>`}
       </div>
     </div>
   `;
@@ -187,9 +194,13 @@ function renderBoard(){
 function renderBoardSettingsPanel(){
   return `<div class="board-settings-panel">
     <label>內容字級：${state.boardFont.text}px</label>
-    <input type="range" min="18" max="48" value="${state.boardFont.text}" oninput="setBoardFont('text', this.value)">
+    <input type="range" min="18" max="80" value="${state.boardFont.text}" oninput="setBoardFont('text', this.value)">
     <label>日期字級：${state.boardFont.date}px</label>
-    <input type="range" min="18" max="40" value="${state.boardFont.date}" oninput="setBoardFont('date', this.value)">
+    <input type="range" min="18" max="56" value="${state.boardFont.date}" oninput="setBoardFont('date', this.value)">
+    <div class="checkbox-row">
+      <input type="checkbox" id="hide-ann-check" ${state.boardFont.hideEmptyAnn?'checked':''} onchange="toggleHideEmptyAnn(this.checked)">
+      <label for="hide-ann-check">公告是空的時候就隱藏該區塊</label>
+    </div>
   </div>`;
 }
 
@@ -201,6 +212,7 @@ window.enterBoard = enterBoard;
 window.exitBoard = exitBoard;
 window.toggleBoardSettings = toggleBoardSettings;
 window.setBoardFont = setBoardFont;
+window.toggleHideEmptyAnn = toggleHideEmptyAnn;
 
 init();
 </script>

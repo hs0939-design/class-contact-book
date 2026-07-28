@@ -106,9 +106,9 @@ function applyTheme(colors){
 function loadBoardFont(){
   try{
     const raw = localStorage.getItem('contactbook_board_font');
-    if(raw) return Object.assign({text:30, date:26}, JSON.parse(raw));
+    if(raw) return Object.assign({text:40, date:30, hideEmptyAnn:true}, JSON.parse(raw));
   }catch(e){}
-  return {text:30, date:26};
+  return {text:40, date:30, hideEmptyAnn:true};
 }
 function saveBoardFont(f){
   localStorage.setItem('contactbook_board_font', JSON.stringify(f));
