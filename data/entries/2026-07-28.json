@@ -1,18 +1,5 @@
 {
-  "homework": [
-    {
-      "id": "qjljcgv",
-      "subject": "國語",
-      "customLabel": "",
-      "text": "國語第一課"
-    },
-    {
-      "id": "bhv6djy",
-      "subject": "國語",
-      "customLabel": "",
-      "text": "數學11111"
-    }
-  ],
+  "homework": [],
   "announcements": [],
-  "updatedAt": "2026-07-28T15:57:51.004Z"
+  "updatedAt": "2026-08-25T03:46:46.958Z"
 }
