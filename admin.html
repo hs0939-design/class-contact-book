@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@callmebill/lxgw-wenkai-web@latest/style.css">
-<link rel="stylesheet" href="styles.css?v=7">
+<link rel="stylesheet" href="styles.css?v=8">
 </head>
 <body>
 <div class="admin-banner">🔒 這是老師專用後台，請勿把此頁面的連結分享給家長或學生</div>
@@ -95,6 +95,22 @@ function showToast(msg){
 }
 
 /* ---------- init ---------- */
+let lastFocusedInput = null;
+document.addEventListener('focusin', (e)=>{
+  if(e.target && e.target.tagName==='TEXTAREA') lastFocusedInput = e.target;
+});
+function insertPunct(ch){
+  const el = lastFocusedInput;
+  if(!el || !document.body.contains(el)){ showToast('請先點一下要輸入文字的欄位'); return; }
+  const start = el.selectionStart==null ? el.value.length : el.selectionStart;
+  const end = el.selectionEnd==null ? el.value.length : el.selectionEnd;
+  const val = el.value;
+  el.value = val.slice(0,start) + ch + val.slice(end);
+  const pos = start + ch.length;
+  el.focus();
+  el.setSelectionRange(pos,pos);
+  el.dispatchEvent(new Event('input', {bubbles:true}));
+}
 async function init(){
   state.auth = loadAuth();
   if(!state.auth){ state.modal='auth'; render(); return; }
@@ -332,6 +348,11 @@ function renderAnnouncementEdit(){
 }
 function renderSentenceEdit(){
   if(!state.draft) return '';
+  const puncts = ['，','。','、','！','？','；','：','「','」','『','』','（','）','—','…'];
+  const toolbar = `<div class="punct-toolbar">
+    ${puncts.map(p=>`<button type="button" class="punct-btn" onclick="insertPunct('${p}')">${p}</button>`).join('')}
+  </div>
+  <div class="hint" style="margin:2px 4px 10px;">先點一下要打字的欄位，再點上面的符號就會插入進去（功課、公告的欄位也適用）。</div>`;
   const rows = state.draft.sentences.map((s,i)=>`
     <div class="edit-row">
       <div class="stamp">${i+1}</div>
@@ -339,7 +360,7 @@ function renderSentenceEdit(){
       <button class="del" onclick="removeSentence('${s.id}')">✕</button>
     </div>
   `).join('');
-  return rows + `<button class="addbtn" onclick="addSentence()">＋ 新增一句</button>`;
+  return toolbar + rows + `<button class="addbtn" onclick="addSentence()">＋ 新增一句</button>`;
 }
 
 function renderAuthModal(){
@@ -411,6 +432,7 @@ window.updateAnnouncement = updateAnnouncement;
 window.addSentence = addSentence;
 window.removeSentence = removeSentence;
 window.updateSentence = updateSentence;
+window.insertPunct = insertPunct;
 window.doSave = doSave;
 window.submitAuth = submitAuth;
 window.openSettings = openSettings;

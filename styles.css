@@ -133,6 +133,10 @@ button{font-family:inherit;cursor:pointer;}
 .sentence-text{flex:1;font-size:20px;line-height:1.8;}
 .sentence-empty{padding:22px 4px;color:var(--sentence-ink);opacity:0.55;font-size:13px;text-align:center;}
 
+.punct-toolbar{display:flex;flex-wrap:wrap;gap:6px;padding:4px;}
+.punct-btn{background:#fff;border:1px solid var(--paper-line);color:var(--navy);width:36px;height:36px;border-radius:7px;font-size:16px;font-weight:600;}
+.punct-btn:hover{background:var(--paper);border-color:var(--navy);}
+
 .toolbar{display:flex;justify-content:flex-end;gap:10px;padding:0 4px;}
 .save-btn{background:var(--navy);color:#EFE9D8;border:none;padding:10px 22px;border-radius:9px;font-size:14px;font-weight:700;box-shadow:var(--shadow);}
 .save-btn:hover{background:var(--navy-2);}
