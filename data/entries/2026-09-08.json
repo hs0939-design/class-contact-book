@@ -13,8 +13,14 @@
       "text": "自然通知單簽名"
     }
   ],
-  "announcements": [],
-  "updatedAt": "2026-09-07T06:05:44.194Z",
+  "announcements": [
+    {
+      "id": "ci7brai",
+      "text": "早:朝會  第二節:圖書館",
+      "link": ""
+    }
+  ],
+  "updatedAt": "2026-09-07T06:12:38.735Z",
   "sentences": [
     {
       "id": "i3zzewe",
