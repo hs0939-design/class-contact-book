@@ -53,7 +53,7 @@ async function fetchJson(path){
 }
 
 /* ---------- theme / color customization ---------- */
-const DEFAULT_COLORS = { paper:'#F7F4EC', ink:'#2B2A26', navy:'#1F2D50', gold:'#C9A24B' };
+const DEFAULT_COLORS = { paper:'#F7F4EC', ink:'#2B2A26', navy:'#1F2D50', gold:'#C9A24B', sentenceBg:'#FFF8E1', sentenceInk:'#3E2C1C' };
 
 function clamp(n,min,max){ return Math.min(max, Math.max(min, n)); }
 function hexToRgb(hex){
@@ -100,15 +100,17 @@ function applyTheme(colors){
   root.setProperty('--board-bg', shade(c.navy, -0.4));
   root.setProperty('--board-bg-2', shade(c.navy, -0.55));
   root.setProperty('--chalk', shade(c.paper, 0.08));
+  root.setProperty('--sentence-bg', c.sentenceBg);
+  root.setProperty('--sentence-ink', c.sentenceInk);
 }
 
 /* ---------- board mode font-size preference (per device) ---------- */
 function loadBoardFont(){
   try{
     const raw = localStorage.getItem('contactbook_board_font');
-    if(raw) return Object.assign({text:40, date:30, hideEmptyAnn:true}, JSON.parse(raw));
+    if(raw) return Object.assign({text:40, date:30, hideEmptyAnn:true, hideEmptySentence:true}, JSON.parse(raw));
   }catch(e){}
-  return {text:40, date:30, hideEmptyAnn:true};
+  return {text:40, date:30, hideEmptyAnn:true, hideEmptySentence:true};
 }
 function saveBoardFont(f){
   localStorage.setItem('contactbook_board_font', JSON.stringify(f));

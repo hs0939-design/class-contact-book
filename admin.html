@@ -6,13 +6,13 @@
 <title>教師後台．電子聯絡簿</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=5">
+<link rel="stylesheet" href="styles.css?v=6">
 </head>
 <body>
 <div class="admin-banner">🔒 這是老師專用後台，請勿把此頁面的連結分享給家長或學生</div>
 <div id="app"><div class="loading">載入中…</div></div>
 
-<script src="common.js?v=3"></script>
+<script src="common.js?v=4"></script>
 <script>
 const LS_KEY = 'contactbook_admin_auth';
 
@@ -22,7 +22,7 @@ let state = {
   calOpen: false,
   calMonth: new Date(),
   config: {className:'我的班級'},
-  entry: {homework:[], announcements:[], updatedAt:null},
+  entry: {homework:[], announcements:[], sentences:[], updatedAt:null},
   entryDates: new Set(),
   draft: null,
   saving: false,
@@ -117,12 +117,13 @@ async function loadEntryForCurrentDate(){
   const key = dateKey(state.currentDate);
   try{
     const data = await ghGet('data/entries/'+key+'.json');
-    state.entry = data ? data.json : {homework:[], announcements:[], updatedAt:null};
+    state.entry = data ? data.json : {homework:[], announcements:[], sentences:[], updatedAt:null};
   }catch(e){
-    state.entry = {homework:[], announcements:[], updatedAt:null};
+    state.entry = {homework:[], announcements:[], sentences:[], updatedAt:null};
     showToast('讀取今日資料失敗：'+e.message);
   }
   state.draft = JSON.parse(JSON.stringify(state.entry));
+  if(!state.draft.sentences) state.draft.sentences = [];
 }
 
 async function goToDateStr(key){
@@ -151,6 +152,9 @@ function updateHomework(id, field, value){ const h = state.draft.homework.find(h
 function addAnnouncement(){ state.draft.announcements.push({id:uid(), text:'', link:''}); render(); }
 function removeAnnouncement(id){ state.draft.announcements = state.draft.announcements.filter(a=>a.id!==id); render(); }
 function updateAnnouncement(id, field, value){ const a = state.draft.announcements.find(a=>a.id===id); if(a) a[field]=value; }
+function addSentence(){ state.draft.sentences.push({id:uid(), text:''}); render(); }
+function removeSentence(id){ state.draft.sentences = state.draft.sentences.filter(s=>s.id!==id); render(); }
+function updateSentence(id, field, value){ const s = state.draft.sentences.find(s=>s.id===id); if(s) s[field]=value; }
 
 async function doSave(){
   state.saving = true; render();
@@ -178,6 +182,8 @@ function previewColors(){
     ink: document.getElementById('color-ink').value,
     navy: document.getElementById('color-navy').value,
     gold: document.getElementById('color-gold').value,
+    sentenceBg: document.getElementById('color-sentence-bg').value,
+    sentenceInk: document.getElementById('color-sentence-ink').value,
   });
 }
 function randomizeColors(){
@@ -186,7 +192,7 @@ function randomizeColors(){
   document.getElementById('color-ink').value = t.ink;
   document.getElementById('color-navy').value = t.navy;
   document.getElementById('color-gold').value = t.gold;
-  applyTheme(t);
+  previewColors();
 }
 async function saveSettings(){
   const nameInput = document.getElementById('classname-input');
@@ -197,6 +203,8 @@ async function saveSettings(){
     ink: document.getElementById('color-ink').value,
     navy: document.getElementById('color-navy').value,
     gold: document.getElementById('color-gold').value,
+    sentenceBg: document.getElementById('color-sentence-bg').value,
+    sentenceInk: document.getElementById('color-sentence-ink').value,
   };
   try{
     state.config.className = name;
@@ -269,6 +277,10 @@ function render(){
           <div class="card-head"><h2>公告聯絡事項</h2></div>
           <div class="card-body">${renderAnnouncementEdit()}</div>
         </div>
+        <div class="sentence-card section">
+          <div class="card-head"><h2>句子練習（抄寫）</h2></div>
+          <div class="card-body">${renderSentenceEdit()}</div>
+        </div>
       </div>
     </div>
     ${state.modal==='settings' ? renderSettingsModal() : ''}
@@ -317,6 +329,17 @@ function renderAnnouncementEdit(){
   `).join('');
   return rows + `<button class="addbtn" onclick="addAnnouncement()">＋ 新增一則公告</button>`;
 }
+function renderSentenceEdit(){
+  if(!state.draft) return '';
+  const rows = state.draft.sentences.map((s,i)=>`
+    <div class="edit-row">
+      <div class="stamp">${i+1}</div>
+      <textarea placeholder="給學生抄寫的句子…" oninput="updateSentence('${s.id}','text',this.value)">${escapeHtml(s.text)}</textarea>
+      <button class="del" onclick="removeSentence('${s.id}')">✕</button>
+    </div>
+  `).join('');
+  return rows + `<button class="addbtn" onclick="addSentence()">＋ 新增一句</button>`;
+}
 
 function renderAuthModal(){
   return `
@@ -355,6 +378,10 @@ function renderSettingsModal(){
         <div class="color-row"><span>強調色（編號／裝飾）</span><input type="color" id="color-gold" value="${c.gold}" oninput="previewColors()"></div>
         <button type="button" class="random-btn" onclick="randomizeColors()">🎲 隨機配色</button>
 
+        <label style="margin-top:18px;">句子練習配色（獨立設定）</label>
+        <div class="color-row"><span>背景色</span><input type="color" id="color-sentence-bg" value="${c.sentenceBg}" oninput="previewColors()"></div>
+        <div class="color-row"><span>文字色</span><input type="color" id="color-sentence-ink" value="${c.sentenceInk}" oninput="previewColors()"></div>
+
         <div class="modal-actions">
           <button class="btn-cancel" onclick="closeModal()">取消</button>
           <button class="btn-ok" onclick="saveSettings()">儲存設定</button>
@@ -380,6 +407,9 @@ window.updateHomework = updateHomework;
 window.addAnnouncement = addAnnouncement;
 window.removeAnnouncement = removeAnnouncement;
 window.updateAnnouncement = updateAnnouncement;
+window.addSentence = addSentence;
+window.removeSentence = removeSentence;
+window.updateSentence = updateSentence;
 window.doSave = doSave;
 window.submitAuth = submitAuth;
 window.openSettings = openSettings;

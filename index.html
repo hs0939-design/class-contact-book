@@ -6,12 +6,12 @@
 <title>電子聯絡簿</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=5">
+<link rel="stylesheet" href="styles.css?v=6">
 </head>
 <body>
 <div id="app"><div class="loading">載入中…</div></div>
 
-<script src="common.js?v=3"></script>
+<script src="common.js?v=4"></script>
 <script>
 let state = {
   mode: 'view',            // view | board
@@ -19,7 +19,7 @@ let state = {
   calOpen: false,
   calMonth: new Date(),
   config: {className:'我的班級'},
-  entry: {homework:[], announcements:[], updatedAt:null},
+  entry: {homework:[], announcements:[], sentences:[], updatedAt:null},
   entryDates: new Set(),
   boardSettingsOpen: false,
   boardFont: loadBoardFont(),
@@ -39,7 +39,7 @@ async function init(){
 async function loadEntryForCurrentDate(){
   const key = dateKey(state.currentDate);
   const data = await fetchJson('./data/entries/' + key + '.json');
-  state.entry = data || {homework:[], announcements:[], updatedAt:null};
+  state.entry = data || {homework:[], announcements:[], sentences:[], updatedAt:null};
 }
 
 async function goToDateStr(key){
@@ -81,6 +81,11 @@ function toggleHideEmptyAnn(checked){
   saveBoardFont(state.boardFont);
   render();
 }
+function toggleHideEmptySentence(checked){
+  state.boardFont.hideEmptySentence = checked;
+  saveBoardFont(state.boardFont);
+  render();
+}
 document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && state.mode==='board') exitBoard(); });
 
 function render(){
@@ -113,6 +118,10 @@ function render(){
         <div class="card section">
           <div class="card-head"><h2>公告聯絡事項</h2></div>
           <div class="card-body">${renderAnnouncementView()}</div>
+        </div>
+        <div class="sentence-card section">
+          <div class="card-head"><h2>句子練習（抄寫）</h2></div>
+          <div class="card-body">${renderSentenceView()}</div>
         </div>
       </div>
     </div>
@@ -155,11 +164,21 @@ function renderAnnouncementView(){
     <div class="content-text">${escapeHtml(a.text)}${a.link ? `<a class="link-chip" href="${escapeAttr(a.link)}" target="_blank" rel="noopener">🔗 相關連結</a>` : ''}</div>
   </div>`).join('');
 }
+function renderSentenceView(){
+  const list = state.entry.sentences || [];
+  if(list.length===0) return `<div class="sentence-empty">今天沒有句子練習</div>`;
+  return list.map((s,i)=>`<div class="sentence-row">
+      <div class="stamp">${i+1}</div>
+      <div class="sentence-text">${escapeHtml(s.text)}</div>
+    </div>`).join('');
+}
 
 function renderBoard(){
   const hw = state.entry.homework || [];
   const ann = state.entry.announcements || [];
+  const sen = state.entry.sentences || [];
   const hideAnn = ann.length===0 && state.boardFont.hideEmptyAnn;
+  const hideSentence = sen.length===0 && state.boardFont.hideEmptySentence;
   return `
     <div class="board-wrap">
       <button class="exit-board" onclick="exitBoard()">✕ 離開投影模式</button>
@@ -186,6 +205,17 @@ function renderBoard(){
               <div class="board-text">${escapeHtml(a.text)}${a.link?` <a href="${escapeAttr(a.link)}" target="_blank" rel="noopener">🔗 連結</a>`:''}</div>
             </div>`).join('')}
         </div>`}
+        ${hideSentence ? '' : `
+        <div class="board-sec">
+          <h2>句子練習（抄寫）</h2>
+          <div class="board-sentence-panel">
+            ${sen.length===0 ? `<div class="board-sentence-empty">今天沒有句子練習</div>` :
+              sen.map((s,i)=>`<div class="board-row">
+                <div class="board-stamp">${i+1}</div>
+                <div class="board-text">${escapeHtml(s.text)}</div>
+              </div>`).join('')}
+          </div>
+        </div>`}
       </div>
     </div>
   `;
@@ -201,6 +231,10 @@ function renderBoardSettingsPanel(){
       <input type="checkbox" id="hide-ann-check" ${state.boardFont.hideEmptyAnn?'checked':''} onchange="toggleHideEmptyAnn(this.checked)">
       <label for="hide-ann-check">公告是空的時候就隱藏該區塊</label>
     </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="hide-sentence-check" ${state.boardFont.hideEmptySentence?'checked':''} onchange="toggleHideEmptySentence(this.checked)">
+      <label for="hide-sentence-check">句子練習是空的時候就隱藏該區塊</label>
+    </div>
   </div>`;
 }
 
@@ -213,6 +247,7 @@ window.exitBoard = exitBoard;
 window.toggleBoardSettings = toggleBoardSettings;
 window.setBoardFont = setBoardFont;
 window.toggleHideEmptyAnn = toggleHideEmptyAnn;
+window.toggleHideEmptySentence = toggleHideEmptySentence;
 
 init();
 </script>
