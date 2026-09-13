@@ -1,5 +1,14 @@
 {
-  "homework": [],
+  "homework": [
+    {
+      "id": "22gbqnr",
+      "text": "甲本P19-20"
+    },
+    {
+      "id": "t580aqy",
+      "text": "數習P18-19"
+    }
+  ],
   "announcements": [
     {
       "id": "h0a0efq",
@@ -7,6 +16,11 @@
       "link": ""
     }
   ],
-  "sentences": [],
-  "updatedAt": "2026-09-08T05:45:54.749Z"
+  "sentences": [
+    {
+      "id": "cqzzxv5",
+      "text": "小明提出的要求很不合理，根本是無理取鬧。"
+    }
+  ],
+  "updatedAt": "2026-09-13T23:19:34.117Z"
 }
