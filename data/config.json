@@ -4,8 +4,8 @@
     "paper": "#f7f4ec",
     "ink": "#2b2a26",
     "navy": "#1f2d50",
-    "gold": "#fff700",
-    "sentenceBg": "#fff8e1",
+    "gold": "#fb00ff",
+    "sentenceBg": "#fee22f",
     "sentenceInk": "#3e2c1c"
   }
 }
