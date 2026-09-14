@@ -1,12 +1,29 @@
 {
-  "homework": [],
+  "homework": [
+    {
+      "id": "bg2i383",
+      "text": "國卷 X 1"
+    },
+    {
+      "id": "447aqg7",
+      "text": "數卷 X 1"
+    },
+    {
+      "id": "rhbim7n",
+      "text": "L3 訂正簽名"
+    },
+    {
+      "id": "5v6e3y2",
+      "text": "練習 國P30 自我介紹 1 分鐘"
+    }
+  ],
   "announcements": [
     {
       "id": "n1en06q",
-      "text": " 8:10:防災演練",
+      "text": " 8:10:防災演練 ",
       "link": ""
     }
   ],
   "sentences": [],
-  "updatedAt": "2026-09-08T05:43:51.411Z"
+  "updatedAt": "2026-09-14T05:34:03.534Z"
 }
