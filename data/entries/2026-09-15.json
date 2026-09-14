@@ -1,5 +1,18 @@
 {
-  "homework": [],
+  "homework": [
+    {
+      "id": "v5babk6",
+      "text": "甲本P21-22"
+    },
+    {
+      "id": "p3dckdh",
+      "text": "數習P20-21"
+    },
+    {
+      "id": "4tqlmec",
+      "text": "發月考範圍通知單"
+    }
+  ],
   "announcements": [
     {
       "id": "2dhdged",
@@ -8,5 +21,5 @@
     }
   ],
   "sentences": [],
-  "updatedAt": "2026-09-12T13:07:46.358Z"
+  "updatedAt": "2026-09-14T05:23:25.710Z"
 }
