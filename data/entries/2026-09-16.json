@@ -9,12 +9,18 @@
       "text": "數習P22-23"
     }
   ],
-  "announcements": [],
+  "announcements": [
+    {
+      "id": "t6j8z1q",
+      "text": "早自修安靜閱讀、背唐詩。",
+      "link": ""
+    }
+  ],
   "sentences": [
     {
       "id": "sb5d469",
       "text": "他立志要成為一名不同凡響的科學家。"
     }
   ],
-  "updatedAt": "2026-09-14T05:28:57.346Z"
+  "updatedAt": "2026-09-15T23:35:15.045Z"
 }
