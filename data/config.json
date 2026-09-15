@@ -5,7 +5,15 @@
     "ink": "#2b2a26",
     "navy": "#1f2d50",
     "gold": "#00bfff",
+    "homeworkBg": "#ffffff",
+    "homeworkInk": "#2b2a26",
+    "announcementBg": "#ffffff",
+    "announcementInk": "#2b2a26",
     "sentenceBg": "#feee86",
     "sentenceInk": "#3e2c1c"
-  }
+  },
+  "sectionOrder": [
+    "sentences",
+    "announcements"
+  ]
 }
