@@ -7,12 +7,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@callmebill/lxgw-wenkai-web@latest/style.css">
-<link rel="stylesheet" href="styles.css?v=8">
+<link rel="stylesheet" href="styles.css?v=9">
 </head>
 <body>
 <div id="app"><div class="loading">載入中…</div></div>
 
-<script src="common.js?v=4"></script>
+<script src="common.js?v=5"></script>
 <script>
 let state = {
   mode: 'view',            // view | board
@@ -93,12 +93,25 @@ function render(){
   const app = document.getElementById('app');
   if(state.mode==='board'){ app.innerHTML = renderBoard(); return; }
 
+  const annBlock = `
+        <div class="announcement-card section">
+          <div class="card-head"><h2>公告聯絡事項</h2></div>
+          <div class="card-body">${renderAnnouncementView()}</div>
+        </div>`;
+  const senBlock = `
+        <div class="sentence-card section">
+          <div class="card-head"><h2>句子練習（抄寫）</h2></div>
+          <div class="card-body">${renderSentenceView()}</div>
+        </div>`;
+  const sentenceFirst = state.config.sectionOrder && state.config.sectionOrder[0]==='sentences';
+  const orderedBlocks = sentenceFirst ? senBlock+annBlock : annBlock+senBlock;
+
   app.innerHTML = `
     <div class="topbar">
-      <div class="brand"><span class="name serif">📖 ${escapeHtml(state.config.className)}．電子聯絡簿</span></div>
+      <div class="brand"><span class="name serif">📖 電子聯絡簿</span></div>
       <div class="datebar">
         <button class="navbtn" onclick="shiftDay(-1)">‹</button>
-        <div class="today-label serif">${fmtDateLabel(state.currentDate)}</div>
+        <div class="today-label serif">${fmtDateLabelROC(state.currentDate)}</div>
         <button class="navbtn" onclick="shiftDay(1)">›</button>
         <button class="cal-toggle" onclick="toggleCal()">📅 選擇日期</button>
       </div>
@@ -109,21 +122,14 @@ function render(){
     <div class="layout">
       <div class="side"><div class="card">${state.calOpen ? renderCalendarPanel() : renderSideInfo()}</div></div>
       <div class="main">
-        <div class="card section">
+        <div class="homework-card section">
           <div class="card-head">
             <h2>今日交代功課</h2>
             <span class="meta-line">${state.entry.updatedAt ? '最後更新：'+fmtUpdated(state.entry.updatedAt) : '尚未有紀錄'}</span>
           </div>
           <div class="card-body">${renderHomeworkView()}</div>
         </div>
-        <div class="card section">
-          <div class="card-head"><h2>公告聯絡事項</h2></div>
-          <div class="card-body">${renderAnnouncementView()}</div>
-        </div>
-        <div class="sentence-card section">
-          <div class="card-head"><h2>句子練習（抄寫）</h2></div>
-          <div class="card-body">${renderSentenceView()}</div>
-        </div>
+        ${orderedBlocks}
       </div>
     </div>
   `;
@@ -155,14 +161,14 @@ function renderHomeworkView(){
   if(list.length===0) return `<div class="empty-hint">今天還沒有交代功課喔</div>`;
   return list.map((h,i)=>`<div class="row">
       <div class="stamp">${i+1}</div>
-      <div class="content-text">${escapeHtml(h.text)}</div>
+      <div class="content-text">${renderRichText(h.text)}</div>
     </div>`).join('');
 }
 function renderAnnouncementView(){
   const list = state.entry.announcements || [];
   if(list.length===0) return `<div class="empty-hint">今天沒有其他公告</div>`;
   return list.map(a=>`<div class="row">
-    <div class="content-text">${escapeHtml(a.text)}${a.link ? `<a class="link-chip" href="${escapeAttr(a.link)}" target="_blank" rel="noopener">🔗 相關連結</a>` : ''}</div>
+    <div class="content-text">${renderRichText(a.text)}${a.link ? `<a class="link-chip" href="${escapeAttr(a.link)}" target="_blank" rel="noopener">🔗 相關連結</a>` : ''}</div>
   </div>`).join('');
 }
 function renderSentenceView(){
@@ -170,7 +176,7 @@ function renderSentenceView(){
   if(list.length===0) return `<div class="sentence-empty">今天沒有句子練習</div>`;
   return list.map((s,i)=>`<div class="sentence-row">
       <div class="stamp">${i+1}</div>
-      <div class="sentence-text">${escapeHtml(s.text)}</div>
+      <div class="sentence-text">${renderRichText(s.text)}</div>
     </div>`).join('');
 }
 
@@ -180,6 +186,31 @@ function renderBoard(){
   const sen = state.entry.sentences || [];
   const hideAnn = ann.length===0 && state.boardFont.hideEmptyAnn;
   const hideSentence = sen.length===0 && state.boardFont.hideEmptySentence;
+
+  const annBlock = hideAnn ? '' : `
+        <div class="board-sec">
+          <h2>公告聯絡事項</h2>
+          <div class="board-announcement-panel">
+            ${ann.length===0 ? `<div class="board-empty">今天沒有其他公告</div>` :
+              ann.map(a=>`<div class="board-row">
+                <div class="board-text">${renderRichText(a.text)}${a.link?` <a href="${escapeAttr(a.link)}" target="_blank" rel="noopener">🔗 連結</a>`:''}</div>
+              </div>`).join('')}
+          </div>
+        </div>`;
+  const senBlock = hideSentence ? '' : `
+        <div class="board-sec">
+          <h2>句子練習（抄寫）</h2>
+          <div class="board-sentence-panel">
+            ${sen.length===0 ? `<div class="board-sentence-empty">今天沒有句子練習</div>` :
+              sen.map((s,i)=>`<div class="board-row">
+                <div class="board-stamp">${i+1}</div>
+                <div class="board-text">${renderRichText(s.text)}</div>
+              </div>`).join('')}
+          </div>
+        </div>`;
+  const sentenceFirst = state.config.sectionOrder && state.config.sectionOrder[0]==='sentences';
+  const orderedBlocks = sentenceFirst ? senBlock+annBlock : annBlock+senBlock;
+
   return `
     <div class="board-wrap">
       <button class="exit-board" onclick="exitBoard()">✕ 離開投影模式</button>
@@ -192,31 +223,15 @@ function renderBoard(){
       <div class="board-body">
         <div class="board-sec">
           <h2>今日交代功課</h2>
-          ${hw.length===0 ? `<div class="board-empty">今天還沒有交代功課</div>` :
-            hw.map((h,i)=>`<div class="board-row">
-                <div class="board-stamp">${i+1}</div>
-                <div class="board-text">${escapeHtml(h.text)}</div>
-              </div>`).join('')}
-        </div>
-        ${hideAnn ? '' : `
-        <div class="board-sec">
-          <h2>公告聯絡事項</h2>
-          ${ann.length===0 ? `<div class="board-empty">今天沒有其他公告</div>` :
-            ann.map(a=>`<div class="board-row">
-              <div class="board-text">${escapeHtml(a.text)}${a.link?` <a href="${escapeAttr(a.link)}" target="_blank" rel="noopener">🔗 連結</a>`:''}</div>
-            </div>`).join('')}
-        </div>`}
-        ${hideSentence ? '' : `
-        <div class="board-sec">
-          <h2>句子練習（抄寫）</h2>
-          <div class="board-sentence-panel">
-            ${sen.length===0 ? `<div class="board-sentence-empty">今天沒有句子練習</div>` :
-              sen.map((s,i)=>`<div class="board-row">
-                <div class="board-stamp">${i+1}</div>
-                <div class="board-text">${escapeHtml(s.text)}</div>
-              </div>`).join('')}
+          <div class="board-homework-panel">
+            ${hw.length===0 ? `<div class="board-empty">今天還沒有交代功課</div>` :
+              hw.map((h,i)=>`<div class="board-row">
+                  <div class="board-stamp">${i+1}</div>
+                  <div class="board-text">${renderRichText(h.text)}</div>
+                </div>`).join('')}
           </div>
-        </div>`}
+        </div>
+        ${orderedBlocks}
       </div>
     </div>
   `;

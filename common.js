@@ -5,6 +5,11 @@ function fmtDateLabel(d){
   const wk = ['日','一','二','三','四','五','六'][d.getDay()];
   return d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日 週'+wk;
 }
+function fmtDateLabelROC(d){
+  const wk = ['日','一','二','三','四','五','六'][d.getDay()];
+  const rocYear = d.getFullYear() - 1911;
+  return rocYear+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日 週'+wk;
+}
 function sameDay(a,b){ return dateKey(a)===dateKey(b); }
 function uid(){ return Math.random().toString(36).slice(2,9); }
 function fmtUpdated(iso){
@@ -17,6 +22,16 @@ function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 function escapeAttr(s){ return escapeHtml(s); }
+
+/* 支援兩種簡單標記語法：
+   [[詞]] -> 重點標色
+   字(ㄓㄨˋ) -> 字上方顯示注音 */
+function renderRichText(s){
+  let out = escapeHtml(s);
+  out = out.replace(/([\u4e00-\u9fff]{1,6})\(([ㄅ-ㄩㄧㄨㄩˊˇˋ˙\s]{1,10})\)/g, '<ruby>$1<rt>$2</rt></ruby>');
+  out = out.replace(/\[\[(.+?)\]\]/g, '<span class="hl-word">$1</span>');
+  return out;
+}
 
 function buildCalendarCells(calMonth){
   const y = calMonth.getFullYear(), m = calMonth.getMonth();
@@ -53,7 +68,12 @@ async function fetchJson(path){
 }
 
 /* ---------- theme / color customization ---------- */
-const DEFAULT_COLORS = { paper:'#F7F4EC', ink:'#2B2A26', navy:'#1F2D50', gold:'#C9A24B', sentenceBg:'#FFF8E1', sentenceInk:'#3E2C1C' };
+const DEFAULT_COLORS = {
+  paper:'#F7F4EC', ink:'#2B2A26', navy:'#1F2D50', gold:'#C9A24B',
+  homeworkBg:'#FFFFFF', homeworkInk:'#2B2A26',
+  announcementBg:'#FFFFFF', announcementInk:'#2B2A26',
+  sentenceBg:'#FFF8E1', sentenceInk:'#3E2C1C',
+};
 
 function clamp(n,min,max){ return Math.min(max, Math.max(min, n)); }
 function hexToRgb(hex){
@@ -100,6 +120,10 @@ function applyTheme(colors){
   root.setProperty('--board-bg', shade(c.navy, -0.4));
   root.setProperty('--board-bg-2', shade(c.navy, -0.55));
   root.setProperty('--chalk', shade(c.paper, 0.08));
+  root.setProperty('--homework-bg', c.homeworkBg);
+  root.setProperty('--homework-ink', c.homeworkInk);
+  root.setProperty('--announcement-bg', c.announcementBg);
+  root.setProperty('--announcement-ink', c.announcementInk);
   root.setProperty('--sentence-bg', c.sentenceBg);
   root.setProperty('--sentence-ink', c.sentenceInk);
 }

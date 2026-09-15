@@ -34,11 +34,11 @@ button{font-family:inherit;cursor:pointer;}
   background:linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%);
   color:#EFE9D8;
   border-bottom:3px solid var(--gold);
-  padding:14px 22px;
+  padding:8px 22px;
   display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
 }
 .brand{display:flex;align-items:baseline;gap:10px;min-width:0;}
-.brand .name{font-family:'Noto Serif TC',serif;font-weight:900;font-size:20px;letter-spacing:0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.brand .name{font-family:'Noto Serif TC',serif;font-weight:900;font-size:17px;letter-spacing:0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
 .datebar{display:flex;align-items:center;gap:8px;}
 .datebar .navbtn{
@@ -47,7 +47,7 @@ button{font-family:inherit;cursor:pointer;}
   display:flex;align-items:center;justify-content:center;font-size:15px;
 }
 .datebar .navbtn:hover{background:rgba(239,233,216,0.2);}
-.datebar .today-label{font-family:'Noto Serif TC',serif;font-weight:700;font-size:16px;min-width:150px;text-align:center;}
+.datebar .today-label{font-family:'Noto Serif TC',serif;font-weight:700;font-size:23px;min-width:190px;text-align:center;}
 .datebar .cal-toggle{
   background:rgba(201,162,75,0.18);border:1px solid var(--gold);color:var(--gold);
   padding:5px 10px;border-radius:8px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:5px;
@@ -93,6 +93,22 @@ button{font-family:inherit;cursor:pointer;}
 .section .card-head h2::before{content:"";width:5px;height:16px;background:var(--gold);border-radius:2px;display:inline-block;}
 .section .card-body{padding:6px 18px 14px;}
 .meta-line{font-size:11.5px;color:var(--ink-soft);}
+
+.homework-card{background:var(--homework-bg);border:1px solid var(--paper-line);border-radius:var(--radius);box-shadow:var(--shadow);}
+.homework-card .card-head{border-bottom-color:rgba(0,0,0,0.08);}
+.homework-card .card-head h2{color:var(--homework-ink);}
+.homework-card .card-head h2::before{background:var(--homework-ink);}
+.homework-card .row{color:var(--homework-ink);}
+.homework-card .stamp{color:var(--homework-ink);}
+
+.announcement-card{background:var(--announcement-bg);border:1px solid var(--paper-line);border-radius:var(--radius);box-shadow:var(--shadow);}
+.announcement-card .card-head{border-bottom-color:rgba(0,0,0,0.08);}
+.announcement-card .card-head h2{color:var(--announcement-ink);}
+.announcement-card .card-head h2::before{background:var(--announcement-ink);}
+.announcement-card .row{color:var(--announcement-ink);}
+
+ruby rt{font-size:0.5em;color:var(--gold);user-select:none;}
+.hl-word{color:var(--gold);font-weight:900;padding:0 1px;}
 
 .row{display:flex;align-items:center;gap:14px;padding:12px 4px;border-bottom:1px dashed var(--paper-line);}
 .row:last-child{border-bottom:none;}
@@ -178,6 +194,13 @@ body.board-mode{background:var(--board-bg);}
 .board-text{font-size:var(--board-text-size);line-height:1.2;}
 .board-text a{color:#F5E7B8;text-decoration:underline;}
 .board-empty{color:rgba(245,243,236,0.5);font-size:18px;padding:10px 0;}
+.board-homework-panel{background:var(--homework-bg);color:var(--homework-ink);border-radius:14px;padding:20px 26px;}
+.board-homework-panel .board-row{border-bottom-color:rgba(0,0,0,0.12);}
+.board-homework-panel .board-stamp{background:var(--homework-ink);border-color:var(--homework-ink);color:var(--homework-bg);}
+.board-homework-panel .board-text{color:var(--homework-ink);}
+.board-announcement-panel{background:var(--announcement-bg);color:var(--announcement-ink);border-radius:14px;padding:20px 26px;}
+.board-announcement-panel .board-row{border-bottom-color:rgba(0,0,0,0.12);}
+.board-announcement-panel .board-text{color:var(--announcement-ink);}
 .board-sentence-panel{background:var(--sentence-bg);color:var(--sentence-ink);border-radius:14px;padding:20px 26px;}
 .board-sentence-panel .board-row{border-bottom-color:rgba(0,0,0,0.12);}
 .board-sentence-panel .board-stamp{background:var(--sentence-ink);border-color:var(--sentence-ink);color:var(--sentence-bg);}
