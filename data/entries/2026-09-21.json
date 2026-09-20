@@ -1,5 +1,18 @@
 {
-  "homework": [],
+  "homework": [
+    {
+      "id": "3ui4adi",
+      "text": "L2 學習單"
+    },
+    {
+      "id": "yhv4mdk",
+      "text": "數習 P26-27"
+    },
+    {
+      "id": "hhrwww5",
+      "text": "帶借書證"
+    }
+  ],
   "announcements": [
     {
       "id": "qnsh7of",
@@ -8,5 +21,5 @@
     }
   ],
   "sentences": [],
-  "updatedAt": "2026-09-12T13:08:21.644Z"
+  "updatedAt": "2026-09-20T23:03:16.802Z"
 }
