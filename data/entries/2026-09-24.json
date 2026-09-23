@@ -2,7 +2,7 @@
   "homework": [
     {
       "id": "zukntzp",
-      "text": "數卷 X 1 "
+      "text": "數卷 X 1"
     },
     {
       "id": "ice6xg1",
@@ -15,6 +15,10 @@
     {
       "id": "i0116m5",
       "text": "聯P4、防災卡簽名"
+    },
+    {
+      "id": "6vvvg85",
+      "text": "考數學 U 1"
     }
   ],
   "announcements": [
@@ -25,5 +29,5 @@
     }
   ],
   "sentences": [],
-  "updatedAt": "2026-09-23T23:07:27.887Z"
+  "updatedAt": "2026-09-23T23:13:12.832Z"
 }
