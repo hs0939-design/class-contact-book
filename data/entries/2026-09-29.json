@@ -13,7 +13,13 @@
       "text": "發流感黃卡 10/7 簽名交回"
     }
   ],
-  "announcements": [],
+  "announcements": [
+    {
+      "id": "b082ygq",
+      "text": "5.10.15.20.25聯絡簿抽檢",
+      "link": ""
+    }
+  ],
   "sentences": [],
-  "updatedAt": "2026-09-23T07:35:20.937Z"
+  "updatedAt": "2026-09-23T07:36:53.531Z"
 }
