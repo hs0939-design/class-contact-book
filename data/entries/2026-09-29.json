@@ -2,15 +2,19 @@
   "homework": [
     {
       "id": "blih9g4",
-      "text": ""
+      "text": "數卷 X 1"
     },
     {
       "id": "2aknt7r",
-      "text": ""
+      "text": "乙本 P17-19"
     },
     {
       "id": "vtdu3pc",
-      "text": "發流感黃卡 10/7 簽名交回"
+      "text": "考英單 C"
+    },
+    {
+      "id": "f8abw9o",
+      "text": "發流感黃卡 10/7 前交回"
     }
   ],
   "announcements": [
@@ -18,8 +22,18 @@
       "id": "b082ygq",
       "text": "5.10.15.20.25聯絡簿抽檢",
       "link": ""
+    },
+    {
+      "id": "rxtg50r",
+      "text": "自然課在教室上",
+      "link": ""
     }
   ],
-  "sentences": [],
-  "updatedAt": "2026-09-23T07:50:14.630Z"
+  "sentences": [
+    {
+      "id": "lqfwdps",
+      "text": "弟弟討厭喝魚湯，但在媽媽的鼓勵下，總算願意（　勉為其難　）的嘗一口。"
+    }
+  ],
+  "updatedAt": "2026-09-24T08:42:31.657Z"
 }
