@@ -21,7 +21,13 @@
       "text": "考 數 U2"
     }
   ],
-  "announcements": [],
+  "announcements": [
+    {
+      "id": "ohjjw8s",
+      "text": "10:10 教學中廊兌換聯絡簿 P 16貓頭鷹獎卡",
+      "link": ""
+    }
+  ],
   "sentences": [],
-  "updatedAt": "2026-09-30T03:54:45.692Z"
+  "updatedAt": "2026-10-01T08:12:40.580Z"
 }
