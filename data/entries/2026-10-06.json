@@ -9,7 +9,13 @@
       "text": "數習 P 36-37"
     }
   ],
-  "announcements": [],
+  "announcements": [
+    {
+      "id": "8hrame4",
+      "text": "暑假作業頒獎",
+      "link": ""
+    }
+  ],
   "sentences": [],
-  "updatedAt": "2026-09-24T09:01:16.041Z"
+  "updatedAt": "2026-10-05T05:59:25.121Z"
 }
