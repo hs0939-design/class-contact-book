@@ -5,7 +5,13 @@
       "text": "考英單 ( E )"
     }
   ],
-  "announcements": [],
+  "announcements": [
+    {
+      "id": "cyhgzav",
+      "text": "暑假作業頒獎",
+      "link": ""
+    }
+  ],
   "sentences": [],
-  "updatedAt": "2026-10-06T07:12:13.964Z"
+  "updatedAt": "2026-10-07T03:49:08.678Z"
 }
