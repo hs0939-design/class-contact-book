@@ -17,7 +17,13 @@
       "text": "背唐詩 7"
     }
   ],
-  "announcements": [],
+  "announcements": [
+    {
+      "id": "70u6an7",
+      "text": "音樂課帶鉛筆盒",
+      "link": ""
+    }
+  ],
   "sentences": [],
-  "updatedAt": "2026-10-14T03:38:42.266Z"
+  "updatedAt": "2026-10-15T06:50:29.726Z"
 }
