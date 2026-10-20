@@ -9,7 +9,13 @@
       "text": "L5 語詞單"
     }
   ],
-  "announcements": [],
+  "announcements": [
+    {
+      "id": "avsplnh",
+      "text": "完成心智圖",
+      "link": ""
+    }
+  ],
   "sentences": [],
-  "updatedAt": "2026-10-15T06:06:03.942Z"
+  "updatedAt": "2026-10-20T07:32:49.020Z"
 }
