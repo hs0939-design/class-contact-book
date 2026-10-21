@@ -9,12 +9,18 @@
       "text": "L3-4 語詞 x 2"
     }
   ],
-  "announcements": [],
+  "announcements": [
+    {
+      "id": "o6a0j4r",
+      "text": "第一節借平板",
+      "link": ""
+    }
+  ],
   "sentences": [
     {
       "id": "xnjcpkx",
       "text": "小恩正四處尋找遺失的筆記本，神情十分著急。"
     }
   ],
-  "updatedAt": "2026-10-21T23:12:24.847Z"
+  "updatedAt": "2026-10-21T23:14:19.625Z"
 }
