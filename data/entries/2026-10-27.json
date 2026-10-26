@@ -9,7 +9,13 @@
       "text": "L6 語詞單"
     }
   ],
-  "announcements": [],
+  "announcements": [
+    {
+      "id": "xv4id4k",
+      "text": "第二節 圖書館",
+      "link": ""
+    }
+  ],
   "sentences": [],
-  "updatedAt": "2026-10-26T23:12:42.019Z"
+  "updatedAt": "2026-10-26T23:14:19.567Z"
 }
