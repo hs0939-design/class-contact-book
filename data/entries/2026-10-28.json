@@ -6,7 +6,7 @@
     },
     {
       "id": "brqkpzs",
-      "text": "L5-6 語詞 X 1"
+      "text": "L5-6 語詞 X 2"
     },
     {
       "id": "ad5t9un",
@@ -14,14 +14,15 @@
     },
     {
       "id": "g1a74ns",
-      "text": "國卷 訂簽"
-    },
-    {
-      "id": "wv98whh",
-      "text": "考數 U1-4 卷"
+      "text": "考數 U1-U4 卷"
     }
   ],
   "announcements": [],
-  "sentences": [],
-  "updatedAt": "2026-10-15T07:01:53.157Z"
+  "sentences": [
+    {
+      "id": "dzi82k4",
+      "text": "炎炎夏日吃上一支冰，讓人全身都感到暢快！"
+    }
+  ],
+  "updatedAt": "2026-10-27T23:29:45.853Z"
 }
