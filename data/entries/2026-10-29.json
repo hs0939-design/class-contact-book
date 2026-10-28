@@ -2,7 +2,7 @@
   "homework": [
     {
       "id": "8l8bm61",
-      "text": "聽考訂簽"
+      "text": "聽考、數卷訂簽"
     },
     {
       "id": "vw6lcsj",
@@ -14,14 +14,19 @@
     },
     {
       "id": "7mtx92w",
-      "text": "數卷訂簽"
+      "text": "考國 L1 - 6  卷 "
     },
     {
       "id": "9bbk3zd",
-      "text": "考國 L1-6 卷 "
+      "text": "考社U1 - U2卷 "
     }
   ],
   "announcements": [],
-  "sentences": [],
-  "updatedAt": "2026-10-27T23:30:51.932Z"
+  "sentences": [
+    {
+      "id": "by0677q",
+      "text": "看到種子發芽，讓我無比期待它的成長。"
+    }
+  ],
+  "updatedAt": "2026-10-28T23:31:16.228Z"
 }
