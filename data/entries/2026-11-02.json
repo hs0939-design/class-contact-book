@@ -1,5 +1,10 @@
 {
-  "homework": [],
+  "homework": [
+    {
+      "id": "443w7ac",
+      "text": "複習功課"
+    }
+  ],
   "announcements": [],
   "sentences": [
     {
@@ -7,5 +12,5 @@
       "text": "睡完午覺後，同學們個個生龍活虎。"
     }
   ],
-  "updatedAt": "2026-10-29T23:15:38.214Z"
+  "updatedAt": "2026-10-29T23:15:51.482Z"
 }
