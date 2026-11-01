@@ -5,12 +5,18 @@
       "text": "複習功課"
     }
   ],
-  "announcements": [],
+  "announcements": [
+    {
+      "id": "iva43u4",
+      "text": "科任作業：英語、自然，交到後門旁邊。",
+      "link": ""
+    }
+  ],
   "sentences": [
     {
       "id": "sxxkksk",
       "text": "睡完午覺後，同學們個個生龍活虎。"
     }
   ],
-  "updatedAt": "2026-10-29T23:15:51.482Z"
+  "updatedAt": "2026-11-01T23:25:21.396Z"
 }
