@@ -10,6 +10,11 @@
     }
   ],
   "announcements": [],
-  "sentences": [],
-  "updatedAt": "2026-11-03T07:50:33.691Z"
+  "sentences": [
+    {
+      "id": "qk29bdg",
+      "text": "石虎在田野和山林間神出鬼沒，捕捉食物。"
+    }
+  ],
+  "updatedAt": "2026-11-03T23:12:29.112Z"
 }
