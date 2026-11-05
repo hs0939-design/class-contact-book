@@ -13,7 +13,13 @@
       "text": "L7 預單"
     }
   ],
-  "announcements": [],
+  "announcements": [
+    {
+      "id": "k3w3e3z",
+      "text": "完成心智圖",
+      "link": ""
+    }
+  ],
   "sentences": [],
-  "updatedAt": "2026-11-04T23:43:12.857Z"
+  "updatedAt": "2026-11-05T23:26:05.366Z"
 }
