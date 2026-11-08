@@ -1,5 +1,14 @@
 {
-  "homework": [],
+  "homework": [
+    {
+      "id": "zyg0imo",
+      "text": "甲本P41-43"
+    },
+    {
+      "id": "2w82tq4",
+      "text": "數習P52-53"
+    }
+  ],
   "announcements": [],
   "sentences": [
     {
@@ -7,5 +16,5 @@
       "text": "每到假日的夜市總是人山人海，擠得大家都動彈不得。"
     }
   ],
-  "updatedAt": "2026-11-04T23:02:10.664Z"
+  "updatedAt": "2026-11-08T23:27:40.896Z"
 }
