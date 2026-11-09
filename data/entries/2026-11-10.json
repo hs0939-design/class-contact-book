@@ -1,5 +1,14 @@
 {
-  "homework": [],
+  "homework": [
+    {
+      "id": "ene54t2",
+      "text": "甲本 P 44-47"
+    },
+    {
+      "id": "b6g3ept",
+      "text": "數卷 X 1"
+    }
+  ],
   "announcements": [
     {
       "id": "z0o9ri3",
@@ -18,5 +27,5 @@
       "text": "這本故事書的內容太有趣了，讓我讀得愛不釋手。"
     }
   ],
-  "updatedAt": "2026-11-09T04:34:55.515Z"
+  "updatedAt": "2026-11-09T23:18:04.382Z"
 }
