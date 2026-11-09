@@ -1,5 +1,26 @@
 {
-  "homework": [],
+  "homework": [
+    {
+      "id": "rqnwk3z",
+      "text": "數習 P60-63"
+    },
+    {
+      "id": "357xu9r",
+      "text": "L10 預單"
+    },
+    {
+      "id": "3qikrhg",
+      "text": "造句 X 3"
+    },
+    {
+      "id": "qfm2faa",
+      "text": "訂簽 L7"
+    },
+    {
+      "id": "fytvz6z",
+      "text": "背唐詩 11"
+    }
+  ],
   "announcements": [
     {
       "id": "kckzbmt",
@@ -8,5 +29,5 @@
     }
   ],
   "sentences": [],
-  "updatedAt": "2026-11-09T04:33:38.863Z"
+  "updatedAt": "2026-11-09T23:34:40.576Z"
 }
