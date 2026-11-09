@@ -1,11 +1,17 @@
 {
   "homework": [],
-  "announcements": [],
+  "announcements": [
+    {
+      "id": "z0o9ri3",
+      "text": "早自習運動會預演",
+      "link": ""
+    }
+  ],
   "sentences": [
     {
       "id": "8rg7e6p",
       "text": "這本故事書的內容太有趣了，讓我讀得愛不釋手。"
     }
   ],
-  "updatedAt": "2026-11-04T23:02:26.759Z"
+  "updatedAt": "2026-11-09T04:33:32.158Z"
 }
