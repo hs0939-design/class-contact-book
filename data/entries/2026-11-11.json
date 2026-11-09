@@ -1,5 +1,14 @@
 {
-  "homework": [],
+  "homework": [
+    {
+      "id": "am8mrrx",
+      "text": "L7 語詞 X 2"
+    },
+    {
+      "id": "h6ir9m5",
+      "text": "數習 P54-57"
+    }
+  ],
   "announcements": [],
   "sentences": [
     {
@@ -7,5 +16,5 @@
       "text": "魔術師精彩的表演，讓台下的觀眾都大吃一驚。"
     }
   ],
-  "updatedAt": "2026-11-04T23:02:52.747Z"
+  "updatedAt": "2026-11-09T23:28:17.813Z"
 }
