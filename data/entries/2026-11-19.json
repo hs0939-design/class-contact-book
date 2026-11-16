@@ -1,5 +1,14 @@
 {
-  "homework": [],
+  "homework": [
+    {
+      "id": "v45idnx",
+      "text": "L8 語詞 X 2"
+    },
+    {
+      "id": "54reqzt",
+      "text": "數習 P68-69"
+    }
+  ],
   "announcements": [],
   "sentences": [
     {
@@ -7,5 +16,5 @@
       "text": "哥哥竟然只用十分鐘就拼完拼圖，真是不可思議。"
     }
   ],
-  "updatedAt": "2026-11-04T23:08:27.586Z"
+  "updatedAt": "2026-11-16T23:21:47.923Z"
 }
