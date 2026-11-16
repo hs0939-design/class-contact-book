@@ -1,5 +1,14 @@
 {
-  "homework": [],
+  "homework": [
+    {
+      "id": "0tcag82",
+      "text": "乙本 P 44-48"
+    },
+    {
+      "id": "n8xpyjs",
+      "text": "數習 P66-67"
+    }
+  ],
   "announcements": [],
   "sentences": [
     {
@@ -7,5 +16,5 @@
       "text": "跟不講理的人講道理，就像對牛彈琴一樣沒效果。"
     }
   ],
-  "updatedAt": "2026-11-04T23:04:19.742Z"
+  "updatedAt": "2026-11-16T23:20:40.322Z"
 }
