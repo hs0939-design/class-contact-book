@@ -1,5 +1,14 @@
 {
-  "homework": [],
+  "homework": [
+    {
+      "id": "k7ovkwe",
+      "text": "甲本P50-53"
+    },
+    {
+      "id": "d8a3dm3",
+      "text": "數習P72-73"
+    }
+  ],
   "announcements": [],
   "sentences": [
     {
@@ -7,5 +16,5 @@
       "text": "雨後的天空像一塊藍寶石，白雲在上面自由飄動。"
     }
   ],
-  "updatedAt": "2026-11-10T11:44:35.473Z"
+  "updatedAt": "2026-11-19T06:13:42.111Z"
 }
