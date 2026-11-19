@@ -1,5 +1,18 @@
 {
-  "homework": [],
+  "homework": [
+    {
+      "id": "iodp6xh",
+      "text": "國習 L 9"
+    },
+    {
+      "id": "88ahbwh",
+      "text": "數習 P 78-79"
+    },
+    {
+      "id": "ga7azob",
+      "text": "考L9 語詞"
+    }
+  ],
   "announcements": [],
   "sentences": [
     {
@@ -7,5 +20,5 @@
       "text": "秋天的落葉像一把把小雨傘，在風中輕輕跳著舞。"
     }
   ],
-  "updatedAt": "2026-11-10T11:44:12.489Z"
+  "updatedAt": "2026-11-19T06:15:58.137Z"
 }
