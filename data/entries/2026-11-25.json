@@ -1,5 +1,14 @@
 {
-  "homework": [],
+  "homework": [
+    {
+      "id": "ckgta8h",
+      "text": "L9 語詞 X 2"
+    },
+    {
+      "id": "d1hdtiw",
+      "text": "數習 P76-77"
+    }
+  ],
   "announcements": [],
   "sentences": [
     {
@@ -7,5 +16,5 @@
       "text": "春風像溫柔的雙手，輕輕撫摸著剛發芽的小草。"
     }
   ],
-  "updatedAt": "2026-11-10T11:43:44.817Z"
+  "updatedAt": "2026-11-19T06:15:04.992Z"
 }
