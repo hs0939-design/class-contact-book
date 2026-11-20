@@ -9,12 +9,18 @@
       "text": "數習P72-73"
     }
   ],
-  "announcements": [],
+  "announcements": [
+    {
+      "id": "qd1f7lx",
+      "text": "背唐詩8:00",
+      "link": ""
+    }
+  ],
   "sentences": [
     {
       "id": "twtpuh0",
       "text": "雨後的天空像一塊藍寶石，白雲在上面自由飄動。"
     }
   ],
-  "updatedAt": "2026-11-19T06:13:42.111Z"
+  "updatedAt": "2026-11-20T04:50:40.942Z"
 }
